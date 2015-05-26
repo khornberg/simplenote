@@ -1,6 +1,6 @@
 # SimpleNote
 
-SimpleNote API wrapper
+SimpleNote API wrapper using [ES6 features](http://en.wikipedia.org/wiki/ECMAScript)
 
 ## Example
 
