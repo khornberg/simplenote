@@ -56,6 +56,25 @@ class SimpleNote {
         });
     });
   }
+
+  get(key, fn) {
+    if(!key) return this.all(fn);
+    var self = this;
+
+    this.auth(function(err, token) {
+      if(err) return fn(err);
+
+      request
+        .get(self.api2 + 'data/' + key)
+        .type('json')
+        .query({ auth : token, email : self.email })
+        .end(function(err, res) {
+          if(res.error) return fn(res.error);
+          else if(!res.text) return fn(null, {})
+          return fn(null, JSON.parse(res.text));
+        });
+    })
+  }
 }
 
 export default SimpleNote;
