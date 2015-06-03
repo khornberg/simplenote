@@ -60,7 +60,7 @@ class SimpleNote {
               var json = JSON.parse(res.text);
               self.notes = array(json.data).sort('modifydate', 'desc');
               resolve(self.notes);
-            })
+          });
         })
     )
     .catch(e => console.log(e));
@@ -81,9 +81,9 @@ class SimpleNote {
             .query({ auth : token, email : self.email })
             .end(function(err, res) {
               if(res.error) reject(res.error);
-              else if(!res.text) reject({})
+              else if(!res.text) reject({});
               resolve(JSON.parse(res.text));
-            })
+          });
         })
     )
     .catch(e => console.log(e));
