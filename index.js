@@ -49,28 +49,27 @@ class SimpleNote {
     // 100 is the highest value you can query
     len = (len && len < 100) ? len : 100;
 
-    var self = this,
-      auth = this.auth();
+    var auth = this.auth();
 
     // TODO: loop through if `mark` is set
     // https://github.com/cpbotha/nvpy/blob/master/nvpy/simplenote.py#L211
     return auth.then(token =>
         new Promise(
-          function(resolve, reject) {
+          (resolve, reject) => {
             request
               .get(self.api2 + 'index')
               .type('json')
               .query({
                 auth: token,
-                email: self.email,
+                email: this.email,
                 length: len
               })
-              .end(function(err, res) {
+              .end((err, res) => {
                 if (res.error) reject(res.error);
                 else if (!res.text) reject([]);
                 var json = JSON.parse(res.text);
-                self.notes = array(json.data).sort('modifydate', 'desc');
-                resolve(self.notes);
+                this.notes = array(json.data).sort('modifydate', 'desc');
+                resolve(this.notes);
               });
           })
       )
@@ -78,22 +77,21 @@ class SimpleNote {
   }
 
   get(key) {
-    if (!key) return this.all(fn);
+    if (!key) throw 'error no key';
 
-    var self = this,
-      auth = this.auth();
+    var auth = this.auth();
 
     return auth.then(token =>
         new Promise(
-          function(resolve, reject) {
+          (resolve, reject) => {
             request
-              .get(self.api2 + 'data/' + key)
+              .get(this.api2 + 'data/' + key)
               .type('json')
               .query({
                 auth: token,
-                email: self.email
+                email: this.email
               })
-              .end(function(err, res) {
+              .end((err, res) => {
                 if (res.error) reject(res.error);
                 else if (!res.text) reject({});
                 resolve(JSON.parse(res.text));
