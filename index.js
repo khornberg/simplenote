@@ -13,6 +13,7 @@ class SimpleNote {
     this.email = email;
     this.password = password;
     this.token = null;
+    this.expires = null; //utc seconds
     this.notes = [];
     this.api = "https://simple-note.appspot.com/api/";
     this.api2 = "https://simple-note.appspot.com/api2/";
@@ -20,26 +21,28 @@ class SimpleNote {
 
   auth() {
     // base64 encoding of auth params
-    var query = encode("email=" + this.email + '&password=' + this.password),
-      self = this;
+    var query = encode("email=" + this.email + '&password=' + this.password);
+        console.log(query);
 
-    if (self.token === null) {
+    //no token or expired token, get a new one
+    if (this.token === null || Date.now() > this.expires) {
       return new Promise(
-        function(resolve, reject) {
+        (resolve, reject) => {
           request
-            .post(self.api + 'login')
+            .post(this.api + 'login')
             .send(query)
-            .end(function(err, res) {
+            .end((err, res) => {
               if (res.error) {
                 reject(res.error);
               }
-              self.token = res.text;
+              this.token = res.text;
+              this.expires = Date.parse(res.headers.expires) + 86400000; // expires 24 hours from now
               resolve(res.text);
             });
         });
     }
 
-    return Promise.resolve(self.token);
+    return Promise.resolve(this.token);
   }
 
   all(len) {
