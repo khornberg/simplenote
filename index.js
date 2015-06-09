@@ -22,7 +22,6 @@ class SimpleNote {
   auth() {
     // base64 encoding of auth params
     var query = encode("email=" + this.email + '&password=' + this.password);
-        console.log(query);
 
     //no token or expired token, get a new one
     if (this.token === null || Date.now() > this.expires) {
