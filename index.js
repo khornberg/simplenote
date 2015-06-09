@@ -12,8 +12,8 @@ class SimpleNote {
   constructor(email, password) {
     this.email = email;
     this.password = password;
-    this.token = null;
-    this.expires = null; //utc seconds
+    this.token = '6BB96C1327D51522F44E0EEE523EE9E5EB0310F2FB06B7FCE34957C19AEFF903';
+    this.expires = 1433943818000; //utc seconds
     this.notes = [];
     this.api = "https://simple-note.appspot.com/api/";
     this.api2 = "https://simple-note.appspot.com/api2/";
@@ -101,9 +101,10 @@ class SimpleNote {
   }
 
   /**
-   * Updates a note
+   * Updates a note if a key is set
+   * Otherwise creates a new note
    * @param  {object} note Note object
-   * @return {array}       Status of update
+   * @return {object}      Note object updated by SimpleNote
    */
   update(note) {
     var auth = this.auth();
@@ -129,6 +130,17 @@ class SimpleNote {
         )
         .catch(e => console.log(e));
     }
+
+    return this.create(note);
+  }
+
+  /**
+   * Create a new note
+   * @param  {object} note Note object
+   * @return {object}      Note object updated by SimpleNote
+   */
+  create(note) {
+    var auth = this.auth();
 
     return auth.then(token =>
         new Promise(
