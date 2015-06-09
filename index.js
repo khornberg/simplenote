@@ -99,6 +99,57 @@ class SimpleNote {
       )
       .catch(e => console.log(e));
   }
+
+  /**
+   * Updates a note
+   * @param  {object} note Note object
+   * @return {array}       Status of update
+   */
+  update(note) {
+    var auth = this.auth();
+
+    if (note.key !== undefined) {
+      return auth.then(token =>
+          new Promise(
+            (resolve, reject) => {
+              request
+                .post(this.api2 + 'data/' + note.key)
+                .type('json')
+                .query({
+                  auth: token,
+                  email: this.email
+                })
+                .send(note)
+                .end((err, res) => {
+                  if (res.error) reject(res.error);
+                  else if (!res.text) reject({});
+                  resolve(JSON.parse(res.text));
+                });
+            })
+        )
+        .catch(e => console.log(e));
+    }
+
+    return auth.then(token =>
+        new Promise(
+          (resolve, reject) => {
+            request
+              .post(this.api2 + 'data')
+              .type('json')
+              .query({
+                auth: token,
+                email: this.email
+              })
+              .send(note)
+              .end((err, res) => {
+                if (res.error) reject(res.error);
+                else if (!res.text) reject({});
+                resolve(JSON.parse(res.text));
+              });
+          })
+      )
+      .catch(e => console.log(e));
+  }
 }
 
 export default SimpleNote;
