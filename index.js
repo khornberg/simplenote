@@ -162,6 +162,33 @@ class SimpleNote {
       )
       .catch(e => console.log(e));
   }
+
+  /**
+   * Trash a note
+   * @param  {array} args Note key or object
+   * @return {object}     Note object updated by SimpleNote
+   */
+  trash(...args) {
+    if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
+      let note = args[0];
+      note.deleted = 1;
+      return this.update(note);
+    }
+
+    var note = {
+        "key": '884d52e30ead11e5880a993d4afa1ea3',
+        "deleted": 1
+    };
+
+    if (args.length > 0 && args[0] !== null) {
+      return this.update(note);
+    }
+
+    return new Promise(function(resolve, reject) {
+      reject('Note object or key not passed');
+    });
+    
+  }
 }
 
 export default SimpleNote;
