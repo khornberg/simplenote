@@ -12,8 +12,8 @@ class SimpleNote {
   constructor(email, password) {
     this.email = email;
     this.password = password;
-    this.token = '6BB96C1327D51522F44E0EEE523EE9E5EB0310F2FB06B7FCE34957C19AEFF903';
-    this.expires = 1433943818000; //utc seconds
+    this.token = null;
+    this.expires = null; //utc seconds
     this.notes = [];
     this.api = "https://simple-note.appspot.com/api/";
     this.api2 = "https://simple-note.appspot.com/api2/";
@@ -176,7 +176,7 @@ class SimpleNote {
     }
 
     var note = {
-        "key": '884d52e30ead11e5880a993d4afa1ea3',
+        "key": args[0],
         "deleted": 1
     };
 
@@ -187,7 +187,7 @@ class SimpleNote {
     return new Promise(function(resolve, reject) {
       reject('Note object or key not passed');
     });
-    
+
   }
 }
 
