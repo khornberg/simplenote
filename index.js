@@ -9,11 +9,11 @@ import encode from 'base64-encode';
 import array from 'array';
 
 class SimpleNote {
-  constructor(email, password) {
+  constructor(email, password, token=null, expires=null) {
     this.email = email;
     this.password = password;
-    this.token = null;
-    this.expires = null; //utc seconds
+    this.token = token;
+    this.expires = expires; //utc seconds
     this.notes = [];
     this.api = "https://simple-note.appspot.com/api/";
     this.api2 = "https://simple-note.appspot.com/api2/";
