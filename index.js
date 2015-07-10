@@ -17,6 +17,7 @@ class SimpleNote {
     this.notes = [];
     this.api = "https://simple-note.appspot.com/api/";
     this.api2 = "https://simple-note.appspot.com/api2/";
+    this.NOTE_FETCH_LENGTH = 50;
   }
 
   auth() {
@@ -44,9 +45,10 @@ class SimpleNote {
     return Promise.resolve(this.token);
   }
 
-  all(len) {
+  all(len = Infinity) {
+console.time('all');
     // 100 is the highest value you can query
-    len = (len && len < 100) ? len : 100;
+    // len = (len && len < 100) ? len : 100;
 
     var auth = this.auth();
 
@@ -55,24 +57,71 @@ class SimpleNote {
     return auth.then(token =>
         new Promise(
           (resolve, reject) => {
-            request
-              .get(self.api2 + 'index')
-              .type('json')
-              .query({
-                auth: token,
-                email: this.email,
-                length: len
-              })
-              .end((err, res) => {
-                if (res.error) reject(res.error);
-                else if (!res.text) reject([]);
-                var json = JSON.parse(res.text);
-                this.notes = array(json.data).sort('modifydate', 'desc');
-                resolve(this.notes);
-              });
+            resolve(this._get(token, len));
           })
       )
       .catch(e => console.log(e));
+      // .then(json => d)
+  }
+
+  _get(token, len, ...mark) {
+    console.time('fetching');
+
+    var m = null;
+    if (mark.length > 0) {
+      m = mark[0];
+    }
+
+    let r = len - this.notes.length;
+    let n = (r < this.NOTE_FETCH_LENGTH) ? r : this.NOTE_FETCH_LENGTH;
+    return this._fetch(token, n, m).then(json => {
+      // this.notes.push(json.data);
+      this._add_notes(json.data);
+
+      if(json.mark && this.notes.length < len) {
+        return this._get(token, len, json.mark);
+      } else {
+        console.timeEnd('fetching');
+        this.notes = array(this.notes).sort('modifydate', 'desc');
+        console.timeEnd('all');
+        return this.notes;
+      }
+    });
+  }
+
+  _add_notes(notes) {
+    this.notes = notes.reduce(function (previous, current) {
+      previous.push(current);
+      return previous;
+    }, this.notes);
+  }
+
+  _fetch(token, len, ...mark) {
+    console.log('fetching', len);
+    console.log('mark in fetch', mark[0]);
+    var query = {
+      auth: token,
+      email: this.email,
+      length: len
+    };
+
+    if (mark.length > 0) {
+      query.mark = mark[0];
+    }
+    return new Promise(
+        (resolve, reject) => {
+          request
+            .get(this.api2 + 'index')
+            .type('json')
+            .query(query)
+            .end((err, res) => {
+              if (res.error) console.log(res.error);
+              if (res.error) reject(res.error);
+              else if (!res.text) reject([]);
+              var json = JSON.parse(res.text);
+              resolve(json);
+            });
+        });
   }
 
   get(key) {
@@ -85,7 +134,6 @@ class SimpleNote {
           (resolve, reject) => {
             request
               .get(this.api2 + 'data/' + key)
-              .type('json')
               .query({
                 auth: token,
                 email: this.email
@@ -187,7 +235,38 @@ class SimpleNote {
     return new Promise(function(resolve, reject) {
       reject('Note object or key not passed');
     });
+  }
 
+  /**
+   * Delete a note
+   * @param  {string} key Note key
+   * @return {object}     Blank object
+   */
+  delete(key) {
+    if (!key) throw 'error no key';
+
+    // must trash first
+    this.trash(key);
+
+    let auth = this.auth();
+
+    return auth.then(token =>
+        new Promise(
+          (resolve, reject) => {
+            request
+              .del(this.api2 + 'data/' + key)
+              .query({
+                auth: token,
+                email: this.email
+              })
+              .end((err, res) => {
+                if (res.error) reject(res.error);
+                else if (!res.text) reject({});
+                resolve(res.text);
+              });
+          })
+      )
+      .catch(e => console.log(e));
   }
 }
 
