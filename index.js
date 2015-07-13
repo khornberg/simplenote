@@ -17,7 +17,7 @@ class SimpleNote {
     this.notes = [];
     this.api = "https://simple-note.appspot.com/api/";
     this.api2 = "https://simple-note.appspot.com/api2/";
-    this.NOTE_FETCH_LENGTH = 50;
+    this.NOTE_FETCH_LENGTH = 100;
   }
 
   /**
