@@ -20,6 +20,10 @@ class SimpleNote {
     this.NOTE_FETCH_LENGTH = 50;
   }
 
+  /**
+   * Authorize user to SimpleNote
+   * @return {Promise} Promise of the authoriation token
+   */
   auth() {
     // base64 encoding of auth params
     var query = encode("email=" + this.email + '&password=' + this.password);
@@ -45,15 +49,14 @@ class SimpleNote {
     return Promise.resolve(this.token);
   }
 
+  /**
+   * Returns all notes
+   * @param  {integer} len Number of notes to return. Defaults to Infinity
+   * @return {Promise}     Promise of notes in an array-like object
+   */
   all(len = Infinity) {
-console.time('all');
-    // 100 is the highest value you can query
-    // len = (len && len < 100) ? len : 100;
-
     var auth = this.auth();
 
-    // TODO: loop through if `mark` is set
-    // https://github.com/cpbotha/nvpy/blob/master/nvpy/simplenote.py#L211
     return auth.then(token =>
         new Promise(
           (resolve, reject) => {
@@ -61,34 +64,39 @@ console.time('all');
           })
       )
       .catch(e => console.log(e));
-      // .then(json => d)
   }
 
+  /**
+   * Helper function for `all` to be called rescursively
+   * @param  {string} token   SimpleNote authoriation token
+   * @param  {integer} len    Number of notes to return
+   * @param  {string} ...mark Bookmark of notes if available
+   * @return {object}         Array-like object of notes
+   */
   _get(token, len, ...mark) {
-    console.time('fetching');
-
     var m = null;
     if (mark.length > 0) {
       m = mark[0];
     }
 
-    let r = len - this.notes.length;
-    let n = (r < this.NOTE_FETCH_LENGTH) ? r : this.NOTE_FETCH_LENGTH;
+    let remaining = len - this.notes.length;
+    let n = (remaining < this.NOTE_FETCH_LENGTH) ? remaining : this.NOTE_FETCH_LENGTH;
     return this._fetch(token, n, m).then(json => {
-      // this.notes.push(json.data);
       this._add_notes(json.data);
 
       if(json.mark && this.notes.length < len) {
         return this._get(token, len, json.mark);
       } else {
-        console.timeEnd('fetching');
         this.notes = array(this.notes).sort('modifydate', 'desc');
-        console.timeEnd('all');
         return this.notes;
       }
     });
   }
 
+  /**
+   * Reduce notes to shared notes array
+   * @param {object} notes Returned notes
+   */
   _add_notes(notes) {
     this.notes = notes.reduce(function (previous, current) {
       previous.push(current);
@@ -96,9 +104,14 @@ console.time('all');
     }, this.notes);
   }
 
+  /**
+   * Get notes
+   * @param  {string} token   SimpleNote authoriation token
+   * @param  {integer} len    Number of notes to return
+   * @param  {string} ...mark Bookmark of notes if available
+   * @return {Promise}        Promise of the response JSON
+   */
   _fetch(token, len, ...mark) {
-    console.log('fetching', len);
-    console.log('mark in fetch', mark[0]);
     var query = {
       auth: token,
       email: this.email,
@@ -124,6 +137,11 @@ console.time('all');
         });
   }
 
+  /**
+   * Get a single note by key
+   * @param  {string} key Key of note
+   * @return {Promise}    Promise of a Note object
+   */
   get(key) {
     if (!key) throw 'error no key';
 
@@ -152,7 +170,7 @@ console.time('all');
    * Updates a note if a key is set
    * Otherwise creates a new note
    * @param  {object} note Note object
-   * @return {object}      Note object updated by SimpleNote
+   * @return {Promise}     Promise of a Note object updated by SimpleNote
    */
   update(note) {
     var auth = this.auth();
@@ -185,7 +203,7 @@ console.time('all');
   /**
    * Create a new note
    * @param  {object} note Note object
-   * @return {object}      Note object updated by SimpleNote
+   * @return {Promise}     Promise of a Note object updated by SimpleNote
    */
   create(note) {
     var auth = this.auth();
@@ -214,7 +232,7 @@ console.time('all');
   /**
    * Trash a note
    * @param  {array} args Note key or object
-   * @return {object}     Note object updated by SimpleNote
+   * @return {Promise}    Promise of a Note object updated by SimpleNote
    */
   trash(...args) {
     if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
@@ -240,7 +258,7 @@ console.time('all');
   /**
    * Delete a note
    * @param  {string} key Note key
-   * @return {object}     Blank object
+   * @return {Promise}    Promise of an empty object
    */
   delete(key) {
     if (!key) throw 'error no key';
