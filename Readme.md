@@ -10,7 +10,7 @@ var simplenote = new SimpleNote('user', 'pass');
 simplenote.all().then(notes => console.log(notes));
 ```
 
-*Run the example through babel first*
+*Run the example using babel-node*
 
 ## API
 
@@ -49,8 +49,14 @@ Trashes a note (different than delete which permanently deletes the note).
 Arguments can be either a key or a Note object.  
 Returns an ES6 promise which resolves to an updated Note object.  
 
+### delete(key)
+Deletes a note.
+Returns an ES6 promise which resolves to the response.
+
 
 ## TODO
 
-- delete
-- tag
+- error handling
+- ensure utf-8 strings
+- tests
+- documentation
