@@ -31,7 +31,8 @@ module.exports = function (grunt) {
       all: ['.tmp/**/*.js'],
       options: {
         reporter: 'spec',
-        ui: 'tdd'
+        ui: 'tdd',
+        timeout: 10000
       }
     }
   });
