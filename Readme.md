@@ -29,6 +29,7 @@ Returns an ES6 promise which resolves to key's JSON.
 Create a new note from a Note object.  
 Returns an ES6 promise which resolves to an updated Note object.  
 
+Example Note object:  
 ```
 {
     "tags": [],
