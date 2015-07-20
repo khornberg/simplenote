@@ -32,7 +32,8 @@ module.exports = function (grunt) {
       options: {
         reporter: 'spec',
         ui: 'tdd',
-        timeout: 10000
+        timeout: 10000,
+        bail: 'true'
       }
     }
   });
