@@ -11,7 +11,7 @@ var user = (process.env.email || '');
 var pass = (process.env.pass || '');
 
 describe('Username and password', () => it('must be set', () => {
-  assert(user, 'must provide a simplenote email');
+  assert(user, 'must provide a simplenote user/email');
   assert(pass, 'must provide a simplenote password');
 }));
 
@@ -37,32 +37,6 @@ var poorly_formed_note = {
   "content": "new note"
   };
 
-// describe('Create new note', () => {
-//   it('should have a key', () => {
-//     assert.equal((2 + 2), 4, "This had better be true"); });
-//   it('should have a key2', () => {
-//     assert.eventually.equal(Promise.resolve(2 + 2), 4, "This had better be true, eventually"); });
-// });
-
-describe('The note life cycle', () => it('should work', done =>
-    simplenote.create(new_note)
-    .then(note => {console.log('new', note);
-    simplenote.get(note.key)
-    .then(note => {console.log('get', note); update_note.key=note.key;
-    simplenote.update(update_note)
-    .then(note => {console.log('updated', note);
-    simplenote.get(note.key)
-    .then(note => {console.log('get', note);
-    simplenote.trash(note)
-    .then(note => {console.log('trashed', note);
-    simplenote.get(note.key)
-    .then(note => {console.log('get', note); done();
-    simplenote.delete(note.key)
-    .then(response => {console.log('delete', response);
-
-  }); }); }); }); }); }); })
-));
-
 /**
  * Test structure
  *
@@ -80,6 +54,27 @@ describe('The note life cycle', () => it('should work', done =>
  * create - a poorly formed note; fail
  * all - get all of the users notes
  */
+
+// Unit tests
+
+// Authenticate
+describe('Authenticate to SimpleNote', () => {
+  var auth = simplenote.auth();
+  it('should return a token', () => {
+    assert.eventually.isString(auth, 'string returned');
+  });
+  it('should set simplenote token', () => {
+    assert.eventually.equal(auth, simplenote.token, 'tokens equal');
+    auth.then(() => {
+      assert.isNumber(simplenote.expires, 'expires set');
+    });
+  });
+  it('should set simplenote expires', () => {
+    auth.then(() => {
+      assert.isNumber(simplenote.expires, 'expires set');
+    });
+  });
+});
 
 // simplenote.create(new_note)
 // .then(note => {console.log('new', note); simplenote.get(note.key);})
@@ -104,3 +99,26 @@ describe('The note life cycle', () => it('should work', done =>
 // simplenote.all(5)
 // .then(notes => {console.log('all 5', notes.length); simplenote.all();})
 // .then(notes => {console.log('all', notes.length);});
+
+// Integration test
+
+describe('The note life cycle', () => it('should work', done =>
+    simplenote.create(new_note)
+    .then(note => {console.log('new', note);
+    simplenote.get(note.key)
+    .then(note => {console.log('get', note); update_note.key=note.key;
+    simplenote.update(update_note)
+    .then(note => {console.log('updated', note);
+    simplenote.get(note.key)
+    .then(note => {console.log('get', note);
+    simplenote.trash(note)
+    .then(note => {console.log('trashed', note);
+    simplenote.get(note.key)
+    .then(note => {console.log('get', note); done();
+    simplenote.delete(note.key)
+    .then(response => {console.log('delete', response);
+
+  }); }); }); }); }); }); })
+));
+
+//sdg
