@@ -60,8 +60,7 @@ class SimpleNote {
           (resolve, reject) => {
             resolve(this._get(token, len));
           })
-      )
-      .catch(e => console.log(e));
+      );
   }
 
   /**
@@ -141,7 +140,7 @@ class SimpleNote {
    * @return {Promise}    Promise of a Note object
    */
   get(key) {
-    if (!key) throw 'error no key';
+    if (!key) new Promise((resolve, reject) => reject('error no key'));
 
     var auth = this.auth();
 
@@ -155,13 +154,12 @@ class SimpleNote {
                 email: this.email
               })
               .end((err, res) => {
-                if (res.error) reject(res.error);
-                else if (!res.text) reject({});
-                resolve(JSON.parse(res.text));
+                if (err) reject(err);
+                else if (!res.text) resolve({});
+                else if (res.text) resolve(JSON.parse(res.text));
               });
           })
-      )
-      .catch(e => console.log(e));
+      );
   }
 
   /**
@@ -186,13 +184,12 @@ class SimpleNote {
                 })
                 .send(note)
                 .end((err, res) => {
-                  if (res.error) reject(res.error);
-                  else if (!res.text) reject({});
-                  resolve(JSON.parse(res.text));
+                  if (err) reject(err);
+                  else if (!res.text) resolve({});
+                  else if (res.text) resolve(JSON.parse(res.text));
                 });
             })
-        )
-        .catch(e => console.log(e));
+        );
     }
 
     return this.create(note);
@@ -218,13 +215,12 @@ class SimpleNote {
               })
               .send(note)
               .end((err, res) => {
-                if (res.error) reject(res.error);
-                else if (!res.text) reject({});
-                resolve(JSON.parse(res.text));
+                if (err) reject(err);
+                else if (!res.text) resolve({});
+                else if (res.text) resolve(JSON.parse(res.text));
               });
           })
-      )
-      .catch(e => console.log(e));
+      );
   }
 
   /**
@@ -259,7 +255,7 @@ class SimpleNote {
    * @return {Promise}    Promise of an empty object
    */
   delete(key) {
-    if (!key) throw 'error no key';
+    if (!key) new Promise((resolve, reject) => reject('error no key'));
 
     // must trash first
     this.trash(key);
@@ -276,13 +272,12 @@ class SimpleNote {
                 email: this.email
               })
               .end((err, res) => {
-                if (res.error) reject(res.error);
-                else if (!res.text) reject({});
-                resolve(res.text);
+                if (err) reject(err);
+                else if (!res.text) resolve({});
+                else if (res.text) resolve(JSON.parse(res.text));
               });
           })
-      )
-      .catch(e => console.log(e));
+      );
   }
 }
 
