@@ -59,5 +59,4 @@ Returns an ES6 promise which resolves to the response.
 
 - error handling
 - ensure utf-8 strings
-- tests
 - documentation

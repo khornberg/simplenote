@@ -1,11 +1,6 @@
 {
   "name": "simplenote-harmony",
-  "version": "0.0.2",
-  "keywords": [
-    "harmony",
-    "es6",
-    "ecmascript-2015"
-  ],
+  "version": "0.0.3",,
   "dependencies": {
     "array": "^0.4.3",
     "base64-encode": "1.0.1",
