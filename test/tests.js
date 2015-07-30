@@ -2,9 +2,7 @@
 
 import SimpleNote from '../dist/index';
 import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 
-chai.use(chaiAsPromised);
 var assert = chai.assert;
 
 var user = (process.env.email || '');
@@ -38,7 +36,7 @@ var poorly_formed_note = {
   };
 
 /**
- * Test structure
+ * Desired Tests
  *
  * authenticate - ensure user, pwd, toke, expires are set
  * create - create a new note
@@ -55,81 +53,6 @@ var poorly_formed_note = {
  * all - get all of the users notes
  */
 
-// Unit tests
-
-// Authenticate
-describe('Authenticate to SimpleNote', () => {
-  var auth = simplenote.auth();
-  it('should return a token', () => {
-    assert.eventually.isString(auth);
-  });
-  it('should set simplenote token', () => {
-    assert.eventually.equal(auth, simplenote.token);
-  });
-  it('should set simplenote expires', () => {
-    auth.then(() => {
-      assert.isNumber(simplenote.expires);
-    });
-  });
-});
-
-var note = null;
-
-// Create
-
-describe('Create a new note', () => {
-  note = simplenote.create(new_note);
-  it('should return an object', () => {
-    assert.eventually.isObject(note);
-  });
-  it('should contain an key', () => {
-    note.then(() => {
-      assert.ok(note.key);
-    });
-  });
-  it('should have content', () => {
-    note.then(() => {
-      assert.equal(note.content, "an updated note from the es6 api");
-    });
-  });
-});
-
-
-
-// .then(note => {console.log('new', note); simplenote.get(note.key);})
-// .then(note => {console.log('get', note); update_note.key=note.key; simplenote.update(update_note);})
-// .then(note => {console.log('updated', note); simplenote.get(note.key);})
-// .then(note => {console.log('get', note); simplenote.trash(note);})
-// .then(note => {console.log('trashed', note); simplenote.get(note.key);})
-// .then(note => {console.log('get', note); simplenote.delete(note.key);})
-// .then(response => {console.log('delete', response);});
-
-
-// Delete
-describe('Delete a note', () => {
-  it('should contain an empty object', done => {
-      note.then(note => {
-        var deleted = simplenote.delete(note.key);
-        assert.eventually.equal(deleted, {}); done();
-      });
-    });
-});
-
-// // Failures
-// simplenote.create(new_note)
-// .then(note => {console.log('created', note); simplenote.trash(note.key);})
-// .then(note => {console.log('trashed', note); old_note_key=note.key; simplenote.delete(note.key);})
-// .then(response => {console.log('deleted', response); simplenote.get(old_note_key);})
-// .then(response => {console.log('get deleted', response); update_note.key=old_note_key; simplenote.update(update_note.key);});
-//
-// simplenote.create(poorly_formed_note)
-// .then(response => {console.log('poorly formed', response);});
-//
-// // All
-// simplenote.all(5)
-// .then(notes => {console.log('all 5', notes.length); simplenote.all();})
-// .then(notes => {console.log('all', notes.length);});
-
 // Integration test
 
 describe('The note life cycle', () => it('should work', done =>
@@ -144,7 +67,7 @@ describe('The note life cycle', () => it('should work', done =>
     simplenote.trash(note)
     .then(note => {console.log('trashed', note);
     simplenote.get(note.key)
-    .then(note => {console.log('get', note); done();
+    .then(note => {console.log('get', note);  done();
     simplenote.delete(note.key)
     .then(response => {console.log('delete', response);
 
